@@ -1,0 +1,8 @@
+; $Id$
+name = Legal notice for commnets
+description = A legal notice that will appear on comment submission forms
+core = 6.x
+project = "comment_legal"
+project status url = "http://burdinola.aiaraldea.com/fserver/fserver"
+version = "6.x-1.0-alpha1"
+

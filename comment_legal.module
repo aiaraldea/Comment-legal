@@ -1,0 +1,61 @@
+<?php
+
+// $Id$
+
+function comment_legal_menu() {
+  $items = array();
+  $items['admin/settings/comment_legal'] = array(
+      'title' => 'Legal notice for comments',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('comment_legal_settings'),
+      'access arguments' => array('administer comments'),
+  );
+  return $items;
+}
+
+function comment_legal_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'comment_form') {
+    $form['legal_notice'] = array(
+        '#value' => check_markup(
+          t(variable_get('comment_legal_notice_content', "")), variable_get('comment_legal_notice_format', FILTER_FORMAT_DEFAULT), FALSE),
+        '#weight' => variable_get('comment_legal_notice_weight', 0)
+    );
+  }
+}
+
+function comment_legal_settings() {
+  if (user_access('administer comments')) {
+    $conf = $form_state['conf'];
+    $form['legal_notice']['notice_content'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Notice content'),
+        '#default_value' => variable_get('comment_legal_notice_content', ""),
+        '#description' => t("Provide the message for the notice"));
+    $parents[] = 'notice_format';
+    $form['legal_notice']['notice_format'] = filter_form(variable_get('comment_legal_notice_format', FILTER_FORMAT_DEFAULT), 1, $parents);
+
+    $form['notice_weight'] = array(
+        '#type' => 'weight',
+        '#title' => t('Weight'),
+        '#default_value' => variable_get('comment_legal_notice_weight', ""),
+        '#description' => t("Provide the weight for the notice in the form")
+    );
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Submit'),
+    );
+
+    $form['#submit'][] = 'comment_legal_submit';
+
+    return $form;
+  }
+}
+
+function comment_legal_submit($form, &$form_state) {
+  $notice_content = $form_state['values']['notice_content'];
+  $notice_format = $form_state['values']['notice_format'];
+  $notice_weight = $form_state['values']['notice_weight'];
+  variable_set('comment_legal_notice_content', $notice_content);
+  variable_set('comment_legal_notice_format', $notice_format);
+  variable_set('comment_legal_notice_weight', $notice_weight);
+}

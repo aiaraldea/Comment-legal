@@ -1,0 +1,9 @@
+<?php
+
+// $Id$
+
+function comment_legal_uninstall() {
+  variable_del('comment_legal_notice_content');
+  variable_del('comment_legal_notice_format');
+  variable_del('comment_legal_notice_weight');
+}
